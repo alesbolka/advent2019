@@ -7,16 +7,16 @@ pub fn run_int_code(mut input: Vec<u32>) -> u32 {
 
       match input[ii] {
           1  => {
-              let a   = input[ii+1] as usize;
-              let b   = input[ii+2] as usize;
+              let aa  = input[ii+1] as usize;
+              let bb  = input[ii+2] as usize;
               let out = input[ii+3] as usize;
-              input[out] = input[a] + input[b];
+              input[out] = input[aa] + input[bb];
           },
           2  => {
-              let a   = input[ii+1] as usize;
-              let b   = input[ii+2] as usize;
+              let aa  = input[ii+1] as usize;
+              let bb  = input[ii+2] as usize;
               let out = input[ii+3] as usize;
-              input[out] = input[a] * input[b];
+              input[out] = input[aa] * input[bb];
           },
           99 => break input[0],
           _ => panic!("Invalid opcode {}", input[ii])
