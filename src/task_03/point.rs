@@ -1,5 +1,5 @@
-use std::cmp;
 use crate::task_03::Plane;
+use std::cmp;
 
 #[derive(Debug)]
 pub struct Point {
@@ -31,7 +31,7 @@ impl Point {
     }
 
     pub fn new(x: i32, y: i32) -> Point {
-        Point{ x, y }
+        Point { x, y }
     }
 
     fn is_origin(&self) -> bool {
@@ -41,63 +41,65 @@ impl Point {
 
 impl Clone for Point {
     fn clone(&self) -> Point {
-        Point{ x: self.x, y: self.y }
+        Point {
+            x: self.x,
+            y: self.y,
+        }
     }
 }
 
 pub fn orientation(a: &Point, b: &Point, c: &Point) -> u8 {
-  let arg = (b.y - a.y)*(c.x - b.x) - (c.y - b.y)*(b.x - a.x);
-  if arg < 0 {
-      2 // counterclockwise
-  } else if arg > 0 {
-      1 // clockwise
-  } else {
-      0 // parralel
-  }
+    let arg = (b.y - a.y) * (c.x - b.x) - (c.y - b.y) * (b.x - a.x);
+    if arg < 0 {
+        2 // counterclockwise
+    } else if arg > 0 {
+        1 // clockwise
+    } else {
+        0 // parralel
+    }
 }
 
 pub fn overlap(a: &Point, b: &Point, c: &Point) -> bool {
-  b.x <= cmp::max(a.x, c.x) &&
-      b.x >= cmp::min(a.x, c.x) &&
-      b.y <= cmp::max(a.y, c.y) &&
-      b.y >= cmp::min(a.y, c.y)
+    b.x <= cmp::max(a.x, c.x)
+        && b.x >= cmp::min(a.x, c.x)
+        && b.y <= cmp::max(a.y, c.y)
+        && b.y >= cmp::min(a.y, c.y)
 }
 
 pub fn find_x(a: &(Point, Point), b: &(Point, Point)) -> Point {
-  // we only do vertical and horizontal lines, so shortcut
-  if a.0.x == a.1.x {
-      Point{ x: a.0.x, y: b.0.y }
-  } else {
-      Point{ x: b.0.x, y: a.0.y }
-  }
+    // we only do vertical and horizontal lines, so shortcut
+    if a.0.x == a.1.x {
+        Point { x: a.0.x, y: b.0.y }
+    } else {
+        Point { x: b.0.x, y: a.0.y }
+    }
 }
 
-pub fn do_lines_intersect (a: &(Point, Point), b: &(Point, Point)) -> bool {
-  if a.0.is_origin() && b.0.is_origin() {
-      return false;
-  }
-  let or1 = orientation(&a.0, &a.1, &b.0);
-  let or2 = orientation(&a.0, &a.1, &b.1);
-  let or3 = orientation(&b.0, &b.1, &a.0);
-  let or4 = orientation(&b.0, &b.1, &a.1);
+pub fn do_lines_intersect(a: &(Point, Point), b: &(Point, Point)) -> bool {
+    if a.0.is_origin() && b.0.is_origin() {
+        return false;
+    }
+    let or1 = orientation(&a.0, &a.1, &b.0);
+    let or2 = orientation(&a.0, &a.1, &b.1);
+    let or3 = orientation(&b.0, &b.1, &a.0);
+    let or4 = orientation(&b.0, &b.1, &a.1);
 
-  if or1 != or2 && or3 != or4 {
-      return true
-  }
+    if or1 != or2 && or3 != or4 {
+        return true;
+    }
 
-  // At least one combination is not colinear, not overlapping
-  if or1 != 0 || or2 != 0 || or3 != 0 || or4 != 0 {
-      return false
-  }
+    // At least one combination is not colinear, not overlapping
+    if or1 != 0 || or2 != 0 || or3 != 0 || or4 != 0 {
+        return false;
+    }
 
-  if
-      overlap(&a.0, &a.1, &b.0) ||
-      overlap(&a.0, &a.1, &b.1) ||
-      overlap(&b.0, &b.1, &a.0) ||
-      overlap(&b.0, &b.1, &a.1)
-  {
-      panic!("Overlap!");
-  }
+    if overlap(&a.0, &a.1, &b.0)
+        || overlap(&a.0, &a.1, &b.1)
+        || overlap(&b.0, &b.1, &a.0)
+        || overlap(&b.0, &b.1, &a.1)
+    {
+        panic!("Overlap!");
+    }
 
-  false
+    false
 }
