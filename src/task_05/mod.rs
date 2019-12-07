@@ -5,7 +5,6 @@ fn run_int_code(instructions: &mut Vec<i32>) -> Vec<i32> {
     let mut ii = 0;
     let max_ii = instructions.len() - 1;
     let invalid = (max_ii + 5, max_ii + 5);
-    let mut first_input = false;
     let mut results: Vec<i32> = vec![];
 
     loop {
@@ -33,14 +32,11 @@ fn run_int_code(instructions: &mut Vec<i32>) -> Vec<i32> {
         };
         let third = match max_ii - ii {
             0 | 1 | 2 => invalid,
-            _ => match instructions[ii] / 10000 % 10 {
-                0 => (instructions[ii + 3] as usize, instructions[ii + 3] as usize),
-                1 => (ii + 3, instructions[ii + 3] as usize),
-                _ => invalid,
-            },
+            _ => (instructions[ii + 3] as usize, instructions[ii + 3] as usize),
         };
 
         match opcode {
+            // day 2 opcodes
             1 => {
                 instructions[third.1] = instructions[first.0] + instructions[second.0];
                 ii += 4;
@@ -49,12 +45,9 @@ fn run_int_code(instructions: &mut Vec<i32>) -> Vec<i32> {
                 instructions[third.1] = instructions[first.0] * instructions[second.0];
                 ii += 4;
             }
+            // part 1 opcodes
             3 => {
                 let input = loop {
-                    if !first_input {
-                        first_input = true;
-                        break 1;
-                    }
                     println!("Input number");
                     let mut guess = String::new();
 
@@ -68,47 +61,99 @@ fn run_int_code(instructions: &mut Vec<i32>) -> Vec<i32> {
                     }
                 };
                 instructions[first.1] = input;
+                println!("Input accepted: {}", instructions[first.1]);
                 ii += 2;
             }
             4 => {
                 results.push(instructions[first.0]);
                 ii += 2;
-            },
+            }
+            // part 2 opcodes
+            5 => {
+                ii += 3;
+                if instructions[first.0] != 0 {
+                    ii = instructions[second.0] as usize;
+                }
+            }
+            6 => {
+                ii += 3;
+                if instructions[first.0] == 0 {
+                    ii = instructions[second.0] as usize;
+                }
+            }
+            7 => {
+                instructions[third.1] = {
+                    if instructions[first.0] < instructions[second.0] {
+                        1
+                    } else {
+                        0
+                    }
+                };
+                ii += 4;
+            }
+            8 => {
+                instructions[third.1] = {
+                    if instructions[first.0] == instructions[second.0] {
+                        1
+                    } else {
+                        0
+                    }
+                };
+                ii += 4;
+            }
+            // day 2 opcodes
             99 => {
                 break results;
-            },
+            }
             _ => panic!("Invalid opcode {} at index {}", opcode, ii),
         }
     }
 }
 
-pub fn old_tests() {
-    let mut instructions: Vec<i32> = vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50];
-    run_int_code(&mut instructions);
-    let expected: Vec<i32> = vec![3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50];
-    assert_eq!(instructions, expected);
-    let mut instructions: Vec<i32> = vec![1, 0, 0, 0, 99];
-    run_int_code(&mut instructions);
-    let expected: Vec<i32> = vec![2, 0, 0, 0, 99];
-    assert_eq!(instructions, expected);
-    let mut instructions: Vec<i32> = vec![2, 3, 0, 3, 99];
-    run_int_code(&mut instructions);
-    let expected: Vec<i32> = vec![2, 3, 0, 6, 99];
-    assert_eq!(instructions, expected);
-    let mut instructions: Vec<i32> = vec![2, 4, 4, 5, 99, 0];
-    run_int_code(&mut instructions);
-    let expected: Vec<i32> = vec![2, 4, 4, 5, 99, 9801];
-    assert_eq!(instructions, expected);
-    let mut instructions: Vec<i32> = vec![1, 1, 1, 4, 99, 5, 6, 0, 99];
-    run_int_code(&mut instructions);
-    let expected: Vec<i32> = vec![30, 1, 1, 4, 2, 5, 6, 0, 99];
-    assert_eq!(instructions, expected);
+pub fn input_is_8() {
+    let mut instructions: Vec<i32> = vec![3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8];
+    let res = run_int_code(&mut instructions);
+    println!("Input is 8: {:?}", res);
 }
 
-pub fn test() {
-    let mut instructions: Vec<i32> = vec![1101,-1,7,7,4,7,99,11,0,99];
-    run_int_code(&mut instructions);
-    println!("{:?}", instructions[7]);
+pub fn input_is_8_immediate() {
+    let mut instructions: Vec<i32> = vec![3, 3, 1108, -1, 8, 3, 4, 3, 99];
+    let res = run_int_code(&mut instructions);
+    println!("Input is 8: {:?}", res);
+}
+
+pub fn input_less_than_8() {
+    let mut instructions: Vec<i32> = vec![3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8];
+    let res = run_int_code(&mut instructions);
+    println!("Input is < 8: {:?}", res);
+}
+
+pub fn input_less_than_8_immediate() {
+    let mut instructions: Vec<i32> = vec![3, 3, 1107, -1, 8, 3, 4, 3, 99];
+    let res = run_int_code(&mut instructions);
+    println!("Input is < 8: {:?}", res);
+}
+
+pub fn input_is_nonzero() {
+    let mut instructions: Vec<i32> = vec![3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9];
+    let res = run_int_code(&mut instructions);
+    println!("Input is not 0: {:?}", res);
+}
+
+pub fn input_is_nonzero_immediate() {
+    let mut instructions: Vec<i32> = vec![3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1];
+    let res = run_int_code(&mut instructions);
+    println!("Input is not 0: {:?}", res);
+}
+
+pub fn compare_to_8() {
+    let mut instructions: Vec<i32> = vec![
+        3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0,
+        1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20,
+        1105, 1, 46, 98, 99,
+    ];
+    let res = run_int_code(&mut instructions);
+    println!("Input compared to 8: {:?}", res);
 }
 
 pub fn compare_day_1() {
@@ -133,6 +178,13 @@ pub fn compare_day_1() {
 }
 
 pub fn part1() {
+    let mut instructions: Vec<i32> = input::get_input();
+
+    let res = run_int_code(&mut instructions);
+    println!("result: {:?}", res);
+}
+
+pub fn part2() {
     let mut instructions: Vec<i32> = input::get_input();
 
     let res = run_int_code(&mut instructions);
