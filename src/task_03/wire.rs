@@ -6,7 +6,7 @@ pub struct Wire {
   lines: Vec<(Point, Point)>,
 }
 
-fn parse_move(raw: String) -> (Plane, i32) {
+fn parse_move(raw: &str) -> (Plane, i32) {
   let parts = raw.split_at(1);
   let dist = match parts.1.parse::<i32>() {
       Ok(x) => x,
@@ -22,14 +22,17 @@ fn parse_move(raw: String) -> (Plane, i32) {
 }
 
 impl Wire {
-  pub fn new(origin: Point) -> Wire {
+  pub fn new(origin: &Point) -> Wire {
     Wire{ current_point: origin.clone(), lines: vec!{} }
   }
 
-  pub fn path(&mut self, directions: Vec<String>) {
-      for raw in directions {
-          self.travel(parse_move(raw));
-      }
+  pub fn parse(raw: &str, origin: &Point) -> Wire {
+    let mut wire = Wire::new(origin);
+    for instruction in raw.split(',') {
+        wire.travel(parse_move(instruction));
+    }
+
+    wire
   }
 
   fn travel(&mut self, vector: (Plane, i32)) {

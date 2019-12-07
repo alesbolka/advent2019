@@ -8,13 +8,6 @@ pub struct Point {
 }
 
 impl Point {
-    pub fn new(x: i32, y: i32) -> Point {
-        Point{ x, y }
-    }
-    pub fn dist(&self, other: &Point) -> i32 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
-    }
-
     pub fn apply_vector(&self, vector: (Plane, i32)) -> Point {
         let mut point = Point { ..*self };
 
@@ -24,6 +17,21 @@ impl Point {
         }
 
         point
+    }
+
+    pub fn shortest_distance(origin: &Point, list: &Vec<Point>) -> i32 {
+        match list.iter().map(|a| a.dist(origin)).min() {
+            Some(x) => x,
+            None => -1,
+        }
+    }
+
+    pub fn dist(&self, other: &Point) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+
+    pub fn new(x: i32, y: i32) -> Point {
+        Point{ x, y }
     }
 
     fn is_origin(&self) -> bool {
