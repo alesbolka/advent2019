@@ -71,7 +71,7 @@ impl Wire {
         res
     }
 
-    pub fn find_shortest_dist_by_path(origin: &Point, w1: &Wire, w2: &Wire) -> i32 {
+    pub fn find_shortest_dist_by_path(w1: &Wire, w2: &Wire) -> i32 {
         let crossings = Wire::find_intersects(&w1, &w2);
 
         match crossings.iter().map(|cr| {

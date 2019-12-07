@@ -41,7 +41,7 @@ pub fn ex4() {
     let wire1 = Wire::parse(&"R75,D30,R83,U83,L12,D49,R71,U7,L72", &origin);
     let wire2 = Wire::parse(&"U62,R66,U55,R34,D71,R55,D58,R83", &origin);
 
-    assert_eq!(610, Wire::find_shortest_dist_by_path(&origin, &wire1, &wire2));
+    assert_eq!(610, Wire::find_shortest_dist_by_path(&wire1, &wire2));
 }
 
 pub fn ex5() {
@@ -50,7 +50,7 @@ pub fn ex5() {
     let wire1 = Wire::parse(&"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51", &origin);
     let wire2 = Wire::parse(&"U98,R91,D20,R16,D67,R40,U7,R15,U6,R7", &origin);
 
-    assert_eq!(410, Wire::find_shortest_dist_by_path(&origin, &wire1, &wire2));
+    assert_eq!(410, Wire::find_shortest_dist_by_path(&wire1, &wire2));
 }
 
 pub fn tests() {
@@ -80,6 +80,6 @@ pub fn part2() {
 
     println!(
         "Closes intersect by travel path: {}",
-        Wire::find_shortest_dist_by_path(&origin, &wire1, &wire2)
+        Wire::find_shortest_dist_by_path(&wire1, &wire2)
     ); // 164012
 }
