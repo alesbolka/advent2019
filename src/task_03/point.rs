@@ -30,6 +30,21 @@ impl Point {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 
+    pub fn is_on_segment(&self, line: &(Point, Point)) -> bool {
+        let cross = (self.y - line.0.y) * (line.1.x - line.0.x) - (self.x - line.0.x) * (line.1.y - line.0.y);
+        if cross.abs() > 0 {
+            return false
+        }
+
+        let dot = (self.x - line.0.x) * (line.1.x - line.0.x) + (self.y - line.0.y)*(line.1.y - line.0.y);
+        if dot < 0 {
+            return false
+        }
+        let square = (line.1.x - line.0.x)*(line.1.x - line.0.x) + (line.1.y - line.0.y)*(line.1.y - line.0.y);
+
+        dot <= square
+    }
+
     pub fn new(x: i32, y: i32) -> Point {
         Point { x, y }
     }
