@@ -1,4 +1,4 @@
-pub const EXAMPLE_RAW: &str = &r#"COM)B
+pub const EXAMPLE_PART1: &str = &r#"COM)B
 B)C
 C)D
 D)E
@@ -9,6 +9,20 @@ D)I
 E)J
 J)K
 K)L"#;
+
+pub const EXAMPLE_PART2: &str = &r#"COM)B
+B)C
+C)D
+D)E
+E)F
+B)G
+G)H
+D)I
+E)J
+J)K
+K)L
+K)YOU
+I)SAN"#;
 
 pub const PUZZLE: &str = &r#"ZR5)FZS
 WCY)ZB3
