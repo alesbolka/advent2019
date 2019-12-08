@@ -47,10 +47,10 @@ pub fn run_int_code(instructions: &mut Vec<i32>, inputs: &Vec<i32>) -> Vec<i32> 
             }
             // part 1 opcodes
             3 => {
-                let input = inputs[input_index];
+                let input = inputs[input_index]; // Will panic if input not present!
                 input_index += 1;
                 instructions[first.1] = input;
-                println!("Input accepted: {}", instructions[first.1]);
+                // println!("Input accepted: {}", instructions[first.1]);
                 ii += 2;
             }
             4 => {
