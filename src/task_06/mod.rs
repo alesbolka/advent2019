@@ -51,23 +51,27 @@ pub fn parse_map<'a>(input: &'a str) -> HashMap<&'a str, Body<'a>> {
     map
 }
 
-pub fn test() {
-    let x = parse_map(input::EXAMPLE_RAW);
+fn count_orbits<'a>(map: &HashMap<&'a str, Body<'a>>, around: &'a str, offset: i32) -> i32 {
+    let root = map.get(around).unwrap();
+    let mut total = 0;
+    for child in root.children.iter() {
+        total += offset + 1;
+        total += count_orbits(map, child, offset + 1);
+    }
+    total
+}
 
-    match x.get("B") {
-        Some(y) => println!("B has {} children", y.children.len()),
-        None => println!("B not found"),
-    };
-
-
+pub fn part1() {
+    let map = parse_map(input::PUZZLE);
+    println!("{} orbits", count_orbits(&map, "COM", 0)); // 122782
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn test() {
+    fn test_constructor_and_orbit_count() {
         let map = parse_map(input::EXAMPLE_RAW);
-        assert_eq!(42, 42);
+        assert_eq!(42, count_orbits(&map, "COM", 0));
     }
 }
