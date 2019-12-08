@@ -1,6 +1,6 @@
 mod input;
 
-fn run_int_code(instructions: &mut Vec<i32>, inputs: &Vec<i32>) -> Vec<i32> {
+pub fn run_int_code(instructions: &mut Vec<i32>, inputs: &Vec<i32>) -> Vec<i32> {
     let mut ii = 0;
     let max_ii = instructions.len() - 1;
     let invalid = (max_ii + 5, max_ii + 5);
@@ -99,6 +99,20 @@ fn run_int_code(instructions: &mut Vec<i32>, inputs: &Vec<i32>) -> Vec<i32> {
     }
 }
 
+pub fn part1() {
+    let mut instructions: Vec<i32> = input::get_input();
+
+    let res = run_int_code(&mut instructions, &vec![]);
+    println!("result: {:?}", res);
+}
+
+pub fn part2() {
+    let mut instructions: Vec<i32> = input::get_input();
+
+    let res = run_int_code(&mut instructions, &vec![5]);
+    println!("result: {:?}", res); // 11460760
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -184,21 +198,4 @@ mod tests {
         ];
         assert_eq!(instructions, expected);
     }
-}
-
-
-
-
-pub fn part1() {
-    let mut instructions: Vec<i32> = input::get_input();
-
-    let res = run_int_code(&mut instructions, &vec![]);
-    println!("result: {:?}", res);
-}
-
-pub fn part2() {
-    let mut instructions: Vec<i32> = input::get_input();
-
-    let res = run_int_code(&mut instructions, &vec![5]);
-    println!("result: {:?}", res); // 11460760
 }
