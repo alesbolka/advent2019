@@ -1,5 +1,8 @@
 mod input;
 
+const BLOCK_WHITE: char = '\u{2588}';
+const BLOCK_BLACK: char = ' ';
+
 struct Layer {
     digit_count: [u32;10],
     pixels: Vec<Vec<u8>>,
@@ -72,11 +75,34 @@ impl Image {
 
         result
     }
+
+    pub fn render(&self) {
+        for jj in 0..(self.y as usize) {
+            for ii in 0..(self.x as usize)  {
+                let mut pix: char = 'x';
+                'layerLoop: for layer in self.layers.iter() {
+                    match layer.pixels[jj][ii] {
+                        0 => { pix = BLOCK_BLACK; break 'layerLoop; },
+                        1 => { pix = BLOCK_WHITE; break 'layerLoop; }
+                        2 => (), // transparent
+                        _ => panic!("Unexpected pixel value {}", layer.pixels[jj][ii]),
+                    }
+                }
+                print!("{}", pix);
+            }
+            print!("\n");
+        }
+    }
 }
 
 pub fn part1() {
     let img = Image::new(25, 6, input::TASK_INPUT);
     println!("Image checksum: {}", img.checksum_1_by_2().unwrap());
+}
+
+pub fn part2() {
+    let img = Image::new(25, 6, input::TASK_INPUT);
+    img.render();
 }
 
 #[cfg(test)]
