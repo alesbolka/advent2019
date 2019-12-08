@@ -11,7 +11,7 @@ pub struct Machine {
 }
 
 impl Machine {
-    fn new(code: &Vec<i32>, inp: &Vec<i32>) -> Machine {
+    pub fn new(code: &Vec<i32>, inp: &Vec<i32>) -> Machine {
         Machine {
             code: code.clone(),
             code_raw: code.clone(),
@@ -27,6 +27,36 @@ impl Machine {
 impl Machine {
     pub fn reset(&mut self) {
         self.code = self.code_raw.clone()
+    }
+
+    pub fn run(&mut self) -> Option<i32> {
+        loop {
+            if self.ii > self.max_ii {
+                panic!("Invalid index");
+            }
+            let opcode = self.code[self.ii] % 100;
+
+            match opcode {
+                1 => self.opcode1(),
+                2 => self.opcode2(),
+                3 => self.opcode3(),
+                4 => return Some(self.opcode4()),
+                5 => self.opcode5(),
+                6 => self.opcode6(),
+                7 => self.opcode7(),
+                8 => self.opcode8(),
+                99 => {
+                    self.halted = true;
+                    return None;
+                }
+                _ => panic!("Invalid opcode {} at index {}", opcode, self.ii),
+            }
+        }
+    }
+
+    pub fn set_input(&mut self, input: &Vec<i32>) {
+        self.input = input.clone();
+        self.input_ii = 0;
     }
 
     fn get_param(&self, offset: usize) -> usize {
@@ -116,31 +146,6 @@ impl Machine {
             self.code[third] = 0;
         }
         self.ii += 4;
-    }
-
-    fn run(&mut self) -> Option<i32> {
-        loop {
-            if self.ii > self.max_ii {
-                panic!("Invalid index");
-            }
-            let opcode = self.code[self.ii] % 100;
-
-            match opcode {
-                1 => self.opcode1(),
-                2 => self.opcode2(),
-                3 => self.opcode3(),
-                4 => return Some(self.opcode4()),
-                5 => self.opcode5(),
-                6 => self.opcode6(),
-                7 => self.opcode7(),
-                8 => self.opcode8(),
-                99 => {
-                    self.halted = true;
-                    return None;
-                }
-                _ => panic!("Invalid opcode {} at index {}", opcode, self.ii),
-            }
-        }
     }
 }
 
@@ -362,7 +367,7 @@ mod tests {
     }
 
     #[test]
-    fn nonzero_input_ales() {
+    fn nonzero_input() {
         let instructions: Vec<i32> = vec![3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9];
         assert_eq!(
             &1,
@@ -435,8 +440,8 @@ mod tests {
     }
 
     #[test]
-    pub fn compare_day_1_ales() {
-        let mut instructions: Vec<i32> = vec![
+    pub fn compare_day_1() {
+        let instructions: Vec<i32> = vec![
             1, 95, 7, 3, 1, 1, 2, 3, 1, 3, 4, 3, 1, 5, 0, 3, 2, 1, 6, 19, 1, 19, 5, 23, 2, 13, 23,
             27, 1, 10, 27, 31, 2, 6, 31, 35, 1, 9, 35, 39, 2, 10, 39, 43, 1, 43, 9, 47, 1, 47, 9,
             51, 2, 10, 51, 55, 1, 55, 9, 59, 1, 59, 5, 63, 1, 63, 6, 67, 2, 6, 67, 71, 2, 10, 71,
