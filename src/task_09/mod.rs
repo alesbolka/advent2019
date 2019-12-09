@@ -215,8 +215,13 @@ pub fn part1() {
     println!("{:?}", res);
 }
 
-// pub fn part2() {
-// }
+pub fn part2() {
+    let instructions: Vec<i64> = input::get_input();
+    let mut mac = Machine::new(&instructions, &vec![2]);
+
+    let res = mac.full_run();
+    println!("{:?}", res);
+}
 
 #[cfg(test)]
 mod tests {
