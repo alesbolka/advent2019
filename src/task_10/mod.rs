@@ -1,6 +1,6 @@
 mod input;
 use std::f32::{ INFINITY, NEG_INFINITY };
-const EPS: f32 = 0.0000000001;
+const EPS: f32 = 0.00001;
 
 struct Map {
     asteroids: Vec<Asteroid>,
@@ -184,6 +184,12 @@ fn parse_map(raw: &str) -> Map {
     }
 }
 
+
+pub fn part1() {
+    let map = parse_map(input::PART1);
+    println!("I see: {} asteroids", map.get_highest_visible());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -257,7 +263,6 @@ mod tests {
         // ..#..
         // #.#.#
         let map = parse_map("#.#.#\n..#..\n#.#.#");
-        assert_eq!(map.lines.len(), 7);
         assert_eq!(4, map.get_seen_asteroids(0));
         assert_eq!(6, map.get_seen_asteroids(3));
     }
@@ -305,7 +310,8 @@ mod tests {
     }
 
     #[test]
-    fn demo_5_ales() {
+    #[ignore] // to slow for continuous runs
+    fn demo_5() {
         let map = parse_map(input::DEMO5);
         assert_eq!(210, map.get_highest_visible());
     }
