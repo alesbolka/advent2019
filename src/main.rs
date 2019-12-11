@@ -13,5 +13,5 @@ mod task_10;
 mod helpers;
 
 fn main () {
-    task_10::part1();
+    task_10::part2();
 }

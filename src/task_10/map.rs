@@ -1,14 +1,18 @@
 use super::asteroid::Asteroid;
+use std::f64::consts::PI;
+use std::collections::HashMap;
 
 pub struct Map {
     asteroids: Vec<Asteroid>,
     best: usize,
+    station: usize,
 }
 
 impl Map {
     pub fn parse (raw: &str) -> Map {
         let mut map = Map{
             asteroids: vec![],
+            station: 0,
             best: 0,
         };
         let mut xx = 0;
@@ -16,7 +20,11 @@ impl Map {
 
         for bb in raw.bytes() {
             if bb == b'#' {
-                map.asteroids.push(Asteroid::new(xx, yy))
+                map.asteroids.push(Asteroid::new(xx, yy));
+            }
+            if bb == b'X' {
+                map.station = map.asteroids.len();
+                map.asteroids.push(Asteroid::new(xx, yy));
             }
             xx += 1;
             if bb == b'\n' {
@@ -39,8 +47,8 @@ impl Map {
                 }
                 let vv = roid.vector(other);
 
-                if !visible.contains(&vv.1) {
-                    visible.push(vv.1);
+                if !visible.contains(&vv) {
+                    visible.push(vv);
                 }
             }
             if max < visible.len() {
@@ -57,6 +65,58 @@ impl Map {
         }
 
         (Some(max_ii), max as i32)
+    }
+
+    pub fn radial_shooting (&self, base: usize, last: usize) -> Option<&Asteroid> {
+        let station = &self.asteroids[base];
+        let mut order: Vec<(i64)> = vec![];
+        let mut horror: HashMap<i64, Vec<(i32, usize)>> = HashMap::new();
+
+        for (ii, roid) in self.asteroids.iter().enumerate() {
+            let dx = station.x - roid.x;
+            let dy = station.y - roid.y;
+
+            if dx == dy && dx == 0 {
+                continue;
+            }
+
+            // Y axis is our 0, so offset by -PI/2
+            let mut rad = (dy as f64).atan2(dx as f64) - PI / 2.0;
+            if rad < 0.0 {
+                rad += 2.0 * PI;
+            }
+
+            let rad = (rad * 100000000.0) as i64;// What are rounding errors?
+            if !horror.contains_key(&rad) {
+                horror.insert(rad, vec![]);
+                order.push(rad);
+            }
+            horror.get_mut(&rad).unwrap().push((dx * dx + dy * dy, ii));
+        };
+
+        order.sort();
+
+        let mut counter = 0;
+        let first_loop = order.len();
+        while counter < self.asteroids.len() {
+            let ii = order[counter % first_loop];
+            if counter < first_loop {
+                // First iteration, sort array
+                horror.get_mut(&ii).unwrap().sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
+            }
+
+            if horror.get(&ii).unwrap().len() < 1 {
+                println!("Skipping");
+                continue;
+            }
+            counter += 1;
+            let res = horror.get_mut(&ii).unwrap().remove(0);
+
+            if counter >= last {
+                return self.asteroids.get(res.1);
+            }
+        }
+        None
     }
 }
 
@@ -89,7 +149,6 @@ mod tests {
         assert_eq!(3, res.1);
     }
 
-
     #[test]
     fn simple_2() {
         // #.#.#
@@ -111,7 +170,6 @@ mod tests {
         assert_eq!(5 as usize, res.0.unwrap());
         assert_eq!(8, res.1);
     }
-
 
     #[test]
     fn demo_1() {
@@ -152,5 +210,42 @@ mod tests {
         let map = Map::parse(input::DEMO5);
         let res = map.find_best();
         assert_eq!(210, res.1);
+    }
+
+    #[test]
+    fn shoot_simple_1 () {
+        // 0.1.2
+        // ..3..
+        // 4.5.6
+        let map = Map::parse("#.#.#\n..#..\n#.#.#");
+        let rr = map.radial_shooting(3, 1).unwrap();
+        assert_eq!(2, rr.x);
+        assert_eq!(0, rr.y);
+        let rr = map.radial_shooting(3, 3).unwrap();
+        assert_eq!(4, rr.x);
+        assert_eq!(2, rr.y);
+        let rr = map.radial_shooting(6, 2).unwrap();
+        assert_eq!(2, rr.x);
+        assert_eq!(2, rr.y);
+    }
+
+
+    #[test]
+    fn shoot_example () {
+        // .#....###24...#..
+        // ##...##.13#67..9#
+        // ##...#...5.8####.
+        // ..#.....X...###..
+        // ..#.#.....#....##
+        let map = Map::parse(input::TARGET01);
+        let rr = map.radial_shooting(map.station, 1).unwrap();
+        assert_eq!(1, rr.y);
+        assert_eq!(8, rr.x);
+        let rr = map.radial_shooting(map.station, 2).unwrap();
+        assert_eq!(0, rr.y);
+        assert_eq!(9, rr.x);
+        let rr = map.radial_shooting(map.station, 8).unwrap();
+        assert_eq!(2, rr.y);
+        assert_eq!(11, rr.x);
     }
 }
