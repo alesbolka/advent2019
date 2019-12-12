@@ -17,26 +17,16 @@ impl System {
 
     pub fn step (&mut self) {
         for ii in 0..self.moons.len() {
-            let (before, list) = self.moons.split_at_mut(ii);
+            let (_, list) = self.moons.split_at_mut(ii);
             let (moon, others) = list.split_first_mut().unwrap();
-            let mut vel = (0,0,0);
-
-            for other in before.iter().chain(others.iter()) {
-                let boost = moon.get_grav(&other);
-                vel = tuple_sum(vel, boost);
+            for other in others {
+                moon.apply_grav(&other);
+                other.apply_grav(moon);
             }
 
-            moon.step(vel);
-            return;
+            moon.step();
         }
     }
-
-    // fn test(&mut self, ii: usize, jj: usize) {
-    //     let m1 = &mut self.moons[ii];
-    //     let m2 = &self.moons[jj];
-
-    //     m1.apply_grav(m2);
-    // }
 }
 
 

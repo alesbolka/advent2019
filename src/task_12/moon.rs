@@ -21,8 +21,8 @@ impl Moon {
         }
     }
 
-    pub fn get_grav(&mut self, other: &Self) -> (i64, i64, i64) {
-        let dx = {
+    pub fn apply_grav(&mut self, other: &Self) {
+        self.velocity.0 += {
             if self.x > other.x {
                 -1
             } else if self.x < other.x {
@@ -31,8 +31,7 @@ impl Moon {
                 0
             }
         };
-
-        let dy = {
+        self.velocity.1 += {
             if self.y > other.y {
                 -1
             } else if self.y < other.y {
@@ -41,8 +40,7 @@ impl Moon {
                 0
             }
         };
-
-        let dz = {
+        self.velocity.2 += {
             if self.z > other.z {
                 -1
             } else if self.z < other.z {
@@ -51,14 +49,12 @@ impl Moon {
                 0
             }
         };
-
-        (dx, dy, dz)
     }
 
-    pub fn step(&mut self, velocity: (i64, i64, i64)) {
-        self.x += velocity.0;
-        self.y += velocity.1;
-        self.z += velocity.2;
+    pub fn step(&mut self) {
+        self.x += self.velocity.0;
+        self.y += self.velocity.1;
+        self.z += self.velocity.2;
     }
 
     pub fn get_coords(&self) -> (i64, i64, i64) {
@@ -82,13 +78,15 @@ mod tests {
     fn velocity_test() {
         let mut m1 = Moon::new("a", 3, 4, 2);
         let m2 = Moon::new("b", 5, 1, 2);
-        assert_eq!((1,-1,0), m1.get_grav(&m2));
+        m1.apply_grav(&m2);
+        assert_eq!((-1,1,0), m1.velocity);
     }
 
     #[test]
     fn step_test() {
         let mut m1 = Moon::new("a", 3, 4, 2);
-        m1.step((2, -5, 0));
+        m1.velocity = (2, -5, 0);
+        m1.step();
         assert_eq!((5,-1,2), (m1.x, m1.y, m1.z));
     }
 }
