@@ -1,4 +1,5 @@
 use super::moon::Moon;
+use super::input;
 
 pub struct System {
     moons: Vec<Moon>,
@@ -13,6 +14,15 @@ impl System {
         System {
             moons: vec![],
         }
+    }
+
+    pub fn parse (raw: &str) -> System{
+        let mut system = System::new();
+        for (ii, line) in raw.trim().split('\n').enumerate() {
+            system.moons.push(Moon::parse(line, &format!("{}", ii)));
+        }
+
+        system
     }
 
     pub fn step (&mut self) {
@@ -34,18 +44,44 @@ impl System {
 mod tests {
     use super::*;
 
+    #[test]
+    fn parse_test () {
+        let system = System::parse(input::EXAMPLE);
+        let m1 = Moon::new("0", -1, 0, 2);
+        let m2 = Moon::new("1", 2, -10, -7);
+        let m3 = Moon::new("2", 4, -8, 8);
+        let m4 = Moon::new("3", 3, 5, -1);
 
+        assert_eq!(m1, system.moons[0]);
+        assert_eq!(m2, system.moons[1]);
+        assert_eq!(m3, system.moons[2]);
+        assert_eq!(m4, system.moons[3]);
+    }
 
     #[test]
-    fn example_1_test_ales () {
-        let mut system = System::new();
-        system.moons.push(Moon::new("a", -1, 0, 2));
-        system.moons.push(Moon::new("d", 2, -10, -7));
-        system.moons.push(Moon::new("c", 4, -8, 8));
-        system.moons.push(Moon::new("d", 3, 5, -1));
+    fn example_01_ales () {
+        let mut system = System::parse(input::EXAMPLE);
 
+        // Step 1
         system.step();
-
         assert_eq!((2, -1, 1), system.moons[0].get_coords());
+        assert_eq!((3, -7, -4), system.moons[1].get_coords());
+        assert_eq!((1, -7, 5), system.moons[2].get_coords());
+        assert_eq!((2, 2, 0), system.moons[3].get_coords());
+        assert_eq!((3, -1, -1), system.moons[0].get_velocity());
+        assert_eq!((1, 3, 3), system.moons[1].get_velocity());
+        assert_eq!((-3, 1, -3), system.moons[2].get_velocity());
+        assert_eq!((-1, -3, 1), system.moons[3].get_velocity());
+
+        // Step 2
+        system.step();
+        assert_eq!((5, -3, -1), system.moons[0].get_coords());
+        assert_eq!((1, -2, 2), system.moons[1].get_coords());
+        assert_eq!((1, -4, -1), system.moons[2].get_coords());
+        assert_eq!((1, -4, 2), system.moons[3].get_coords());
+        assert_eq!((3, -2, -2), system.moons[0].get_velocity());
+        assert_eq!((-2, 5, 6), system.moons[1].get_velocity());
+        assert_eq!((0, 3, -6), system.moons[2].get_velocity());
+        assert_eq!((-1, -6, 2), system.moons[3].get_velocity());
     }
 }

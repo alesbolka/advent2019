@@ -1,4 +1,8 @@
 #![allow(dead_code)]
+extern crate regex;
+#[macro_use]
+extern crate lazy_static;
+
 mod task_01;
 mod task_02;
 mod task_03;
@@ -10,6 +14,7 @@ mod task_08;
 mod task_09;
 mod task_10;
 mod task_11;
+mod task_12;
 
 mod helpers;
 
