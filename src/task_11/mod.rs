@@ -23,22 +23,15 @@ fn travel(current: (i64, i64), dir: u8) -> (i64, i64) {
     }
 }
 
-pub fn part1() {
-    let mut map: HashMap<(i64, i64), char> = HashMap::new();
-    map.insert((1,1), BLOCK_WHITE);
-    map.insert((1,1), BLOCK_BLACK);
-    map.insert((1,1), BLOCK_WHITE);
-    let mut coords = (0,0);
+fn count_painted_panels(mac: &mut Machine) -> usize {
     // 0 = up
     // 1 = right
     // 2 = down
     // 3 = left
     let mut dir = 0;
-
-    let mut ii = 0;
-    let mut mac = Machine::new(&input::get_code(), &vec![]);
+    let mut map: HashMap<(i64, i64), char> = HashMap::new();
+    let mut coords = (0,0);
     loop {
-        ii+= 1;
         let mut standing_on = 0;
         if *map.get(&coords).unwrap_or(&BLOCK_BLACK) != BLOCK_BLACK {
             standing_on = 1;
@@ -48,11 +41,11 @@ pub fn part1() {
 
         match mac.run() {
             Some(0) => {
-                println!("Painting {:?} black", coords);
+                // println!("Painting {:?} black", coords);
                 map.insert(coords, BLOCK_BLACK);
             },
             Some(1) => {
-                println!("Painting {:?} white", coords);
+                // println!("Painting {:?} white", coords);
                 map.insert(coords, BLOCK_WHITE);
             },
             None => break,
@@ -60,12 +53,12 @@ pub fn part1() {
         };
         match mac.run() {
             Some(0) => {
-                println!("Turning left, moving to {:?}", coords);
+                // println!("Turning left, moving to {:?}", coords);
                 dir = rotate(dir, 0);
                 coords = travel(coords, dir);
             },
             Some(1) => {
-                println!("Turning right, moving to {:?}", coords);
+                // println!("Turning right, moving to {:?}", coords);
                 dir = rotate(dir, 1);
                 coords = travel(coords, dir);
             },
@@ -73,8 +66,16 @@ pub fn part1() {
             Some(x) => panic!("Invalid output value {}", x),
         };
     }
+    map.len()
+}
 
-    println!("Painted {} tiles in {} steps", map.len(), ii);
+pub fn part1() {
+
+    let mut mac = Machine::new(&input::get_code(), &vec![]);
+    let count = count_painted_panels(&mut mac);
+
+
+    println!("Painted {} tiles", count);
 }
 
 #[cfg(test)]
@@ -107,5 +108,9 @@ mod tests {
         assert_eq!(xx, (-1,1));
         xx = travel(xx, 1);
         assert_eq!(xx, (0,1));
+    }
+
+    #[test]
+    fn travel_test2 () {
     }
 }
