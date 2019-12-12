@@ -9,9 +9,10 @@ mod task_07;
 mod task_08;
 mod task_09;
 mod task_10;
+mod task_11;
 
 mod helpers;
 
 fn main () {
-    task_10::part2();
+    task_11::part2();
 }
